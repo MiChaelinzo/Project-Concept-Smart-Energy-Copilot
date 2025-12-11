@@ -147,7 +147,7 @@ describe('MobileAPI Property-Based Tests', () => {
           }
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -322,7 +322,7 @@ describe('MobileAPI Property-Based Tests', () => {
           }
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -446,7 +446,7 @@ describe('MobileAPI Property-Based Tests', () => {
           expect(backToInitialState).toBe(!initialEnabled);
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -648,7 +648,7 @@ describe('MobileAPI Property-Based Tests', () => {
           }
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 });

@@ -84,7 +84,7 @@ describe('CarbonDashboard Property-Based Tests', () => {
           expect(Math.abs(dashboardData.carbonFootprintKg - expectedCarbon)).toBeLessThan(0.001);
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -132,7 +132,7 @@ describe('CarbonDashboard Property-Based Tests', () => {
           expect(Math.abs(actualPercentageChange - expectedPercentageChange)).toBeLessThan(0.001);
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 });

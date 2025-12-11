@@ -222,7 +222,7 @@ export class ScheduleExecutorImpl implements ScheduleExecutor {
    * Clean up all timers (useful for testing and shutdown)
    */
   cleanup(): void {
-    for (const [deviceId] of this.scheduledTimers) {
+    for (const [deviceId] of Array.from(this.scheduledTimers)) {
       this.clearScheduleTimers(deviceId);
     }
     this.activeSchedules.clear();

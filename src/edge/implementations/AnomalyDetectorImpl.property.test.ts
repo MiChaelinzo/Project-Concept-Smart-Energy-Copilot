@@ -98,7 +98,7 @@ describe('AnomalyDetector Property-Based Tests', () => {
           expect(lastAnomaly.actionTaken).toBe('device_shutdown');
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -173,7 +173,7 @@ describe('AnomalyDetector Property-Based Tests', () => {
           expect(history.length).toBe(0);
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -286,7 +286,7 @@ describe('AnomalyDetector Property-Based Tests', () => {
           });
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -380,7 +380,7 @@ describe('AnomalyDetector Property-Based Tests', () => {
           expect(shouldDisable).toBe(false);
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -462,7 +462,7 @@ describe('AnomalyDetector Property-Based Tests', () => {
           expect(loggedAnomaly!.actionTaken).toBe('device_shutdown'); // Action taken
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 });

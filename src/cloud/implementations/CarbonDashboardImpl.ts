@@ -160,7 +160,7 @@ export class CarbonDashboardImpl implements CarbonDashboard {
 
     // Calculate expected baseline consumption for the period
     let expectedBaselineKwh = 0;
-    for (const [deviceId, dailyBaselineKwh] of this.baselineConsumption.entries()) {
+    for (const [deviceId, dailyBaselineKwh] of Array.from(this.baselineConsumption.entries())) {
       expectedBaselineKwh += dailyBaselineKwh * periodDurationDays;
     }
 

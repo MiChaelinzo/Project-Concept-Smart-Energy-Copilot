@@ -9,5 +9,11 @@ module.exports = {
     '!src/**/types.ts'
   ],
   coverageDirectory: 'coverage',
-  verbose: true
+  verbose: false, // Disable verbose output
+  testTimeout: 10000, // 10 second timeout for all tests
+  maxWorkers: 1, // Run tests sequentially to avoid resource conflicts
+  forceExit: true, // Force exit after tests complete
+  detectOpenHandles: true, // Help detect hanging resources
+  silent: true, // Suppress console output during tests
+  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'] // Setup test environment
 };

@@ -1,6 +1,19 @@
 import { DeviceManager } from '../interfaces/DeviceManager';
 import { Device, DeviceStatus, DeviceCommand, DeviceType, TelemetryCallback, TelemetryData } from '../types';
 import { TuyaDeviceManager } from './TuyaDeviceManager';
+import { 
+  ErrorHandler, 
+  ErrorCategory, 
+  ErrorSeverity, 
+  RetryManager,
+  GracefulDegradation,
+  globalErrorHandler 
+} from '../../common/ErrorHandler';
+import { 
+  ManualOverrideManager, 
+  OverrideType,
+  globalOverrideManager 
+} from '../../common/ManualOverride';
 
 /**
  * Command queue entry for offline operations
@@ -47,6 +60,8 @@ export class ResilientDeviceManager implements DeviceManager {
   private cache: Map<string, CacheEntry<any>> = new Map();
   private retryTimer: NodeJS.Timeout | null = null;
   private monitoringTimer: NodeJS.Timeout | null = null;
+  private errorHandler: ErrorHandler;
+  private overrideManager: ManualOverrideManager;
   
   // Configuration
   private readonly MAX_QUEUE_SIZE = 1000;
@@ -57,33 +72,63 @@ export class ResilientDeviceManager implements DeviceManager {
 
   constructor(apiKey: string, apiSecret: string) {
     this.baseManager = new TuyaDeviceManager(apiKey, apiSecret);
+    this.errorHandler = globalErrorHandler;
+    this.overrideManager = globalOverrideManager;
+    
     // Delay starting timers to avoid issues during testing
-    setTimeout(() => {
-      this.startApiMonitoring();
-      this.startRetryProcessor();
-    }, 100);
+    // Skip in test environment to prevent Jest hanging
+    if (process.env.NODE_ENV !== 'test') {
+      setTimeout(() => {
+        this.startApiMonitoring();
+        this.startRetryProcessor();
+      }, 100);
+    }
   }
 
   /**
    * Register a new device with the system
    */
   async registerDevice(deviceId: string, deviceType: DeviceType): Promise<Device> {
-    try {
-      const device = await this.baseManager.registerDevice(deviceId, deviceType);
-      this.updateApiStatus(true);
-      this.cacheData(`device_${deviceId}`, device);
-      return device;
-    } catch (error) {
+    return await this.errorHandler.executeWithErrorHandling(
+      async () => {
+        const device = await this.baseManager.registerDevice(deviceId, deviceType);
+        this.updateApiStatus(true);
+        this.cacheData(`device_${deviceId}`, device);
+        return device;
+      },
+      ErrorCategory.DEVICE_COMMUNICATION,
+      {
+        component: 'ResilientDeviceManager',
+        operation: 'registerDevice',
+        deviceId,
+        timestamp: new Date()
+      },
+      {
+        maxRetries: 3,
+        baseDelayMs: 1000,
+        maxDelayMs: 10000,
+        backoffMultiplier: 2
+      }
+    ).catch(async (systemError) => {
       this.updateApiStatus(false);
       
-      // Try to return cached device if available
-      const cachedDevice = this.getCachedData<Device>(`device_${deviceId}`);
-      if (cachedDevice) {
-        return cachedDevice;
-      }
+      // Try graceful degradation with cached data
+      const cachedDevice = await GracefulDegradation.executeWithFallback(
+        async () => {
+          throw systemError; // Force fallback
+        },
+        () => {
+          const cached = this.getCachedData<Device>(`device_${deviceId}`);
+          if (cached) {
+            return cached;
+          }
+          throw new Error(`No cached data available for device ${deviceId}`);
+        },
+        `device_registration_${deviceId}`
+      );
       
-      throw error;
-    }
+      return cachedDevice;
+    });
   }
 
   /**
@@ -134,9 +179,47 @@ export class ResilientDeviceManager implements DeviceManager {
    * Send a command to a specific device with queueing and retry logic
    */
   async sendCommand(deviceId: string, command: DeviceCommand): Promise<void> {
+    // Check for manual overrides
+    if (this.overrideManager.isDeviceControlOverridden(deviceId)) {
+      const override = this.overrideManager.getActiveOverride(OverrideType.DEVICE_CONTROL, deviceId) ||
+                      this.overrideManager.getActiveOverride(OverrideType.EMERGENCY_SHUTDOWN, deviceId) ||
+                      this.overrideManager.getActiveOverride(OverrideType.EMERGENCY_SHUTDOWN);
+      
+      await this.errorHandler.handleError(
+        ErrorCategory.DEVICE_COMMUNICATION,
+        ErrorSeverity.MEDIUM,
+        `Device command blocked by manual override: ${override?.reason || 'Unknown reason'}`,
+        {
+          component: 'ResilientDeviceManager',
+          operation: 'sendCommand',
+          deviceId,
+          timestamp: new Date(),
+          metadata: { overrideId: override?.id }
+        }
+      );
+      
+      throw new Error(`Device control overridden: ${override?.reason || 'Manual override active'}`);
+    }
+
     if (this.apiStatus.isAvailable) {
       try {
-        await this.sendCommandWithRetry(deviceId, command);
+        await this.errorHandler.executeWithErrorHandling(
+          () => this.sendCommandWithRetry(deviceId, command),
+          ErrorCategory.DEVICE_COMMUNICATION,
+          {
+            component: 'ResilientDeviceManager',
+            operation: 'sendCommand',
+            deviceId,
+            timestamp: new Date()
+          },
+          {
+            maxRetries: 3,
+            baseDelayMs: 1000,
+            maxDelayMs: 5000,
+            backoffMultiplier: 2
+          }
+        );
+        
         this.updateApiStatus(true);
         return;
       } catch (error) {
@@ -147,6 +230,19 @@ export class ResilientDeviceManager implements DeviceManager {
 
     // Queue the command for later transmission
     this.queueCommand(deviceId, command);
+    
+    await this.errorHandler.handleError(
+      ErrorCategory.DEVICE_COMMUNICATION,
+      ErrorSeverity.MEDIUM,
+      `Command queued due to API unavailability`,
+      {
+        component: 'ResilientDeviceManager',
+        operation: 'sendCommand',
+        deviceId,
+        timestamp: new Date(),
+        metadata: { queueSize: this.commandQueue.size }
+      }
+    );
   }
 
   /**
@@ -305,7 +401,7 @@ export class ResilientDeviceManager implements DeviceManager {
    */
   private cleanupCache(): void {
     const now = new Date();
-    for (const [key, entry] of this.cache.entries()) {
+    for (const [key, entry] of Array.from(this.cache.entries())) {
       if (now > entry.expiresAt) {
         this.cache.delete(key);
       }

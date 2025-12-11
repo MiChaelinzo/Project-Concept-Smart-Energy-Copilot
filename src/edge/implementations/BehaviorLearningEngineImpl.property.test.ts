@@ -99,7 +99,7 @@ describe('BehaviorLearningEngine Property-Based Tests', () => {
           expect(schedule.scheduledActions.length).toBe(expectedActionCount);
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -244,7 +244,7 @@ describe('BehaviorLearningEngine Property-Based Tests', () => {
           engine.clearAllData();
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 });

@@ -7,6 +7,13 @@ jest.mock('@aws-sdk/client-timestream-write', () => ({
     send: jest.fn().mockResolvedValue({}),
   })),
   WriteRecordsCommand: jest.fn(),
+  MeasureValueType: {
+    DOUBLE: 'DOUBLE',
+    BIGINT: 'BIGINT',
+    VARCHAR: 'VARCHAR',
+    BOOLEAN: 'BOOLEAN',
+    TIMESTAMP: 'TIMESTAMP',
+  },
 }));
 
 jest.mock('@aws-sdk/client-timestream-query', () => ({

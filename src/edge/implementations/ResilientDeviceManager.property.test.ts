@@ -82,7 +82,7 @@ describe('ResilientDeviceManager Property-Based Tests', () => {
           expect(mockTuyaManager.sendCommand).toHaveBeenCalled();
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 });

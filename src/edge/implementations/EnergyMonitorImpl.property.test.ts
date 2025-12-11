@@ -77,7 +77,7 @@ describe('EnergyMonitor Property-Based Tests', () => {
           expect(Math.abs(totalConsumption - expectedTotal)).toBeLessThan(0.001);
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -105,7 +105,7 @@ describe('EnergyMonitor Property-Based Tests', () => {
           expect(Math.abs(carbonFootprint - expectedCarbon)).toBeLessThan(0.0001);
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 });

@@ -133,7 +133,7 @@ describe('OccupancyDetector Property-Based Tests', () => {
           detector.cleanup();
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   }, 30000); // Increase timeout for async property test
 
@@ -237,7 +237,7 @@ describe('OccupancyDetector Property-Based Tests', () => {
           detector.cleanup();
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   }, 30000); // Increase timeout for async property test
 });

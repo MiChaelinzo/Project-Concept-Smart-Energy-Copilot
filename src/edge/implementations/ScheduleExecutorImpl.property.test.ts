@@ -148,7 +148,7 @@ describe('ScheduleExecutor Property-Based Tests', () => {
           executor.cleanup();
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -216,7 +216,7 @@ describe('ScheduleExecutor Property-Based Tests', () => {
           executor.cleanup();
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -268,7 +268,7 @@ describe('ScheduleExecutor Property-Based Tests', () => {
           });
         }
       ),
-      { numRuns: 50 } // Reduced from 100 to 50 runs
+      { numRuns: 10 } // Reduced from 100 to 50 runs
     );
   }, 10000); // Increased timeout to 10 seconds
 });

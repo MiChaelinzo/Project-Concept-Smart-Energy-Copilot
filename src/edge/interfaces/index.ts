@@ -9,3 +9,4 @@ export * from './OccupancyDetector';
 export * from './VoiceAssistant';
 export * from './AnomalyDetector';
 export * from './ScheduleExecutor';
+export * from './EdgeAIOptimizer';

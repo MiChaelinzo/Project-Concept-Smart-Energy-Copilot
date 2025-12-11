@@ -6,3 +6,4 @@ export { ScheduleExecutorImpl } from './ScheduleExecutorImpl';
 export { OccupancyDetectorImpl } from './OccupancyDetectorImpl';
 export { VoiceAssistantImpl } from './VoiceAssistantImpl';
 export { AnomalyDetectorImpl } from './AnomalyDetectorImpl';
+export { EdgeAIOptimizerImpl } from './EdgeAIOptimizerImpl';

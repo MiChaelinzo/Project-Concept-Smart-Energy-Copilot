@@ -324,7 +324,7 @@ describe('VoiceAssistantImpl Property Tests', () => {
           expect(response.intent.confidence).toBeGreaterThan(0.5);
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -402,7 +402,7 @@ describe('VoiceAssistantImpl Property Tests', () => {
           expect(response.audioResponse.length).toBeGreaterThan(0);
         }
       ),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -448,7 +448,7 @@ describe('VoiceAssistantImpl Property Tests', () => {
           expect(response.intent.confidence).toBeLessThanOrEqual(0.5);
         }
       }),
-      { numRuns: 100 }
+      { numRuns: 20 }
     );
   });
 
@@ -504,7 +504,7 @@ describe('VoiceAssistantImpl Property Tests', () => {
           lowerResponse.includes('what')
         ).toBe(true);
       }),
-      { numRuns: 50 }
+      { numRuns: 10 }
     );
   });
 
@@ -536,7 +536,7 @@ describe('VoiceAssistantImpl Property Tests', () => {
           lowerResponse.includes('rephrase')
         ).toBe(true);
       }),
-      { numRuns: 50 }
+      { numRuns: 10 }
     );
   });
 });

@@ -304,14 +304,24 @@ export class VoiceAssistantImpl implements VoiceAssistant {
       if (timeframe === 'current' && deviceId) {
         // Get current consumption for specific device
         const consumption = await this.energyMonitor.getCurrentConsumption(deviceId);
+        if (isNaN(consumption)) {
+          return `Device ${deviceId} consumption data is currently unavailable.`;
+        }
         return `Device ${deviceId} is currently consuming ${consumption.toFixed(2)} watts.`;
       } else if (timeframe === 'current') {
         // Get total current consumption
         const devices = await this.deviceManager.discoverDevices();
         let total = 0;
+        let validDevices = 0;
         for (const device of devices) {
           const consumption = await this.energyMonitor.getCurrentConsumption(device.id);
-          total += consumption;
+          if (!isNaN(consumption)) {
+            total += consumption;
+            validDevices++;
+          }
+        }
+        if (validDevices === 0) {
+          return `Current consumption data is unavailable for all devices.`;
         }
         return `Total current consumption is ${total.toFixed(2)} watts.`;
       } else if (timeframe === 'today') {
@@ -322,6 +332,9 @@ export class VoiceAssistantImpl implements VoiceAssistant {
           start: startOfDay,
           end: now
         });
+        if (isNaN(total)) {
+          return `Today's energy consumption data is currently unavailable.`;
+        }
         return `Today's total energy consumption is ${total.toFixed(2)} kilowatt-hours.`;
       } else {
         return 'I can provide current consumption or today\'s total. What would you like to know?';

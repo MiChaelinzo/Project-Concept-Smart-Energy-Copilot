@@ -170,7 +170,7 @@ export class BehaviorLearningEngineImpl implements BehaviorLearningEngine {
     let totalConfidence = 0;
     let scheduleCount = 0;
 
-    for (const [deviceId, schedule] of this.schedules.entries()) {
+    for (const [deviceId, schedule] of Array.from(this.schedules.entries())) {
       // Find turn_on actions which indicate device usage
       const onActions = schedule.scheduledActions.filter(action => action.action === 'turn_on');
       
