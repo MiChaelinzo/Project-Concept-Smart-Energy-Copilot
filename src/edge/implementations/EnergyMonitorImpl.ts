@@ -188,10 +188,17 @@ export class EnergyMonitorImpl implements EnergyMonitor {
 
     const readings = this.energyReadings.get(deviceId) || [];
 
-    // Filter readings within the time range
-    return readings.filter(reading => 
-      reading.timestamp >= range.start && reading.timestamp <= range.end
-    );
+    // Filter readings within the time range and convert to EnergyData format
+    return readings
+      .filter(reading => 
+        reading.timestamp >= range.start && reading.timestamp <= range.end
+      )
+      .map(reading => ({
+        deviceId: reading.deviceId,
+        timestamp: reading.timestamp,
+        watts: reading.watts,
+        cumulativeKwh: reading.cumulativeKwh
+      }));
   }
 
   /**
