@@ -1,0 +1,43 @@
+{
+  "tuya": {
+    "clientId": "YOUR_TUYA_CLIENT_ID",
+    "clientSecret": "YOUR_TUYA_CLIENT_SECRET",
+    "endpoint": "https://openapi.tuyaus.com",
+    "region": "us",
+    "deviceRefreshInterval": 30000,
+    "enableRealTimeUpdates": true,
+    "aiAgent": {
+      "enableVoiceControl": true,
+      "enableEnergyOptimization": true,
+      "enableScheduling": true,
+      "confidenceThreshold": 0.7
+    }
+  },
+  "t5AICore": {
+    "devicePath": "/dev/ttyUSB0",
+    "baudRate": 115200,
+    "timeout": 5000,
+    "models": {
+      "voiceRecognition": true,
+      "energyOptimization": true,
+      "textToSpeech": true,
+      "deviceControl": true
+    },
+    "wakeWords": ["hey energy", "smart home", "copilot"],
+    "localProcessingOnly": true
+  },
+  "aiAgent": {
+    "enableT5Integration": true,
+    "enableTuyaIntegration": true,
+    "fallbackToCloud": false,
+    "responseTimeout": 5000,
+    "maxRetries": 3,
+    "features": {
+      "voiceDeviceControl": true,
+      "energyOptimization": true,
+      "naturalLanguageProcessing": true,
+      "realTimeMonitoring": true,
+      "proactiveRecommendations": true
+    }
+  }
+}

@@ -25,7 +25,10 @@
     "@aws-sdk/client-timestream-query": "^3.0.0",
     "commander": "^11.0.0",
     "express": "^4.18.0",
-    "cors": "^2.8.5"
+    "cors": "^2.8.5",
+    "serialport": "^12.0.0",
+    "axios": "^1.6.0",
+    "node-hid": "^3.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",

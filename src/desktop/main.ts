@@ -42,6 +42,7 @@ express.urlencoded = (options?: any) => (req: any, res: any, next: any) => next(
 const cors = () => (req: any, res: any, next: any) => next();
 import { DesktopHubImpl, DesktopHubConfig } from './implementations/DesktopHubImpl';
 import { SystemManagerCLI } from './cli/system-manager';
+import { AIAgentTuyaIntegrationImpl } from './implementations/AIAgentTuyaIntegrationImpl';
 import * as http from 'http';
 
 import * as path from 'path';
