@@ -15,29 +15,37 @@
     "desktop:api": "npm run build && node dist/desktop/main.js start --mode api",
     "desktop:status": "npm run build && node dist/desktop/main.js status",
     "desktop:install": "npm run build && node dist/desktop/main.js install",
-    "desktop:config": "npm run build && node dist/desktop/main.js config init"
+    "desktop:config": "npm run build && node dist/desktop/main.js config init",
+    "web": "npm run build && node dist/web/start-dashboard.js",
+    "web:dev": "npm run build && node dist/web/start-dashboard.js --dev"
   },
-  "keywords": ["energy", "iot", "ai", "tuya"],
+  "keywords": [
+    "energy",
+    "iot",
+    "ai",
+    "tuya"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@aws-sdk/client-timestream-write": "^3.0.0",
     "@aws-sdk/client-timestream-query": "^3.0.0",
-    "commander": "^11.0.0",
-    "express": "^4.18.0",
-    "cors": "^2.8.5",
-    "serialport": "^12.0.0",
+    "@aws-sdk/client-timestream-write": "^3.0.0",
     "axios": "^1.6.0",
-    "node-hid": "^3.0.0"
+    "commander": "^11.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.18.0",
+    "node-hid": "^3.0.0",
+    "serialport": "^12.0.0",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.0",
+    "@types/express": "^4.17.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",
-    "@types/express": "^4.17.0",
-    "@types/cors": "^2.8.0",
+    "fast-check": "^3.15.0",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
-    "typescript": "^5.0.0",
-    "fast-check": "^3.15.0"
+    "typescript": "^5.0.0"
   }
 }
