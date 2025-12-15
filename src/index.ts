@@ -22,3 +22,6 @@ export * from './mobile/types';
 
 // Export all common utilities
 export * from './common';
+
+// Export all desktop interfaces and implementations
+export * from './desktop';

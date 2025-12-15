@@ -7,18 +7,31 @@
     "build": "tsc",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "desktop": "node dist/desktop/main.js",
+    "desktop:start": "npm run build && node dist/desktop/main.js start",
+    "desktop:cli": "npm run build && node dist/desktop/main.js cli",
+    "desktop:service": "npm run build && node dist/desktop/main.js start --mode service",
+    "desktop:api": "npm run build && node dist/desktop/main.js start --mode api",
+    "desktop:status": "npm run build && node dist/desktop/main.js status",
+    "desktop:install": "npm run build && node dist/desktop/main.js install",
+    "desktop:config": "npm run build && node dist/desktop/main.js config init"
   },
   "keywords": ["energy", "iot", "ai", "tuya"],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "@aws-sdk/client-timestream-write": "^3.0.0",
-    "@aws-sdk/client-timestream-query": "^3.0.0"
+    "@aws-sdk/client-timestream-query": "^3.0.0",
+    "commander": "^11.0.0",
+    "express": "^4.18.0",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
     "@types/node": "^20.0.0",
+    "@types/express": "^4.17.0",
+    "@types/cors": "^2.8.0",
     "jest": "^29.5.0",
     "ts-jest": "^29.1.0",
     "typescript": "^5.0.0",
