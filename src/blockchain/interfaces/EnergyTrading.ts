@@ -58,6 +58,27 @@ export interface EnergyWallet {
     averageRating: number;
     badges: string[];
   };
+  biometricAuth: {
+    enabled: boolean;
+    methods: {
+      fingerprint?: {
+        enabled: boolean;
+        hash: string;
+        enrolledAt: Date;
+      };
+      face?: {
+        enabled: boolean;
+        hash: string;
+        enrolledAt: Date;
+      };
+      voice?: {
+        enabled: boolean;
+        hash: string;
+        enrolledAt: Date;
+      };
+    };
+    lastVerified?: Date;
+  };
 }
 
 export interface WalletTransaction {
@@ -329,6 +350,26 @@ export interface EnergyTrading {
    * Generate trading report
    */
   generateTradingReport(walletAddress: string, timeRange: { start: Date; end: Date }): Promise<TradingReport>;
+
+  /**
+   * Enable biometric authentication for wallet
+   */
+  enableBiometricAuth(walletAddress: string, biometricType: 'fingerprint' | 'face' | 'voice', biometricData: string): Promise<boolean>;
+
+  /**
+   * Verify biometric authentication
+   */
+  verifyBiometricAuth(walletAddress: string, biometricType: 'fingerprint' | 'face' | 'voice', biometricData: string): Promise<boolean>;
+
+  /**
+   * Disable biometric authentication
+   */
+  disableBiometricAuth(walletAddress: string, biometricType: 'fingerprint' | 'face' | 'voice'): Promise<boolean>;
+
+  /**
+   * Get enabled biometric authentication methods
+   */
+  getBiometricAuthMethods(walletAddress: string): Promise<string[]>;
 }
 
 export interface ContractFilters {

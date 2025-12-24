@@ -357,6 +357,10 @@ export class EnergyTradingImpl implements EnergyTrading {
           completedTrades: 0,
           averageRating: 0,
           badges: ['newcomer']
+        },
+        biometricAuth: {
+          enabled: false,
+          methods: {}
         }
       };
 
@@ -855,7 +859,13 @@ export class EnergyTradingImpl implements EnergyTrading {
   }
 
   private generateTransactionHash(): string {
-    return `0x${Math.random().toString(16).substr(2, 64)}`;
+    // Generate a proper 64-character hex hash
+    const chars = '0123456789abcdef';
+    let hash = '0x';
+    for (let i = 0; i < 64; i++) {
+      hash += chars[Math.floor(Math.random() * 16)];
+    }
+    return hash;
   }
 
   private generateSubscriptionId(): string {
@@ -864,5 +874,120 @@ export class EnergyTradingImpl implements EnergyTrading {
 
   private generateCarbonCreditId(): string {
     return `cc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  // Biometric Authentication Methods
+  async enableBiometricAuth(walletAddress: string, biometricType: 'fingerprint' | 'face' | 'voice', biometricData: string): Promise<boolean> {
+    try {
+      const wallet = this.wallets.get(walletAddress);
+      if (!wallet) {
+        throw new Error('Wallet not found');
+      }
+
+      // Hash the biometric data for security (in real implementation, use proper biometric hashing)
+      const biometricHash = this.hashBiometricData(biometricData);
+
+      // Initialize biometric auth if not exists
+      if (!wallet.biometricAuth) {
+        wallet.biometricAuth = {
+          enabled: false,
+          methods: {}
+        };
+      }
+
+      // Enable the specific biometric method
+      wallet.biometricAuth.methods[biometricType] = {
+        enabled: true,
+        hash: biometricHash,
+        enrolledAt: new Date()
+      };
+
+      wallet.biometricAuth.enabled = true;
+
+      console.log(`Biometric authentication (${biometricType}) enabled for wallet ${walletAddress}`);
+      return true;
+    } catch (error: any) {
+      console.error('Failed to enable biometric authentication:', error);
+      return false;
+    }
+  }
+
+  async verifyBiometricAuth(walletAddress: string, biometricType: 'fingerprint' | 'face' | 'voice', biometricData: string): Promise<boolean> {
+    try {
+      const wallet = this.wallets.get(walletAddress);
+      if (!wallet || !wallet.biometricAuth?.enabled) {
+        return false;
+      }
+
+      const method = wallet.biometricAuth.methods[biometricType];
+      if (!method || !method.enabled) {
+        return false;
+      }
+
+      // Verify biometric data against stored hash
+      const providedHash = this.hashBiometricData(biometricData);
+      const isValid = method.hash === providedHash;
+
+      if (isValid) {
+        wallet.biometricAuth.lastVerified = new Date();
+        console.log(`Biometric authentication (${biometricType}) verified for wallet ${walletAddress}`);
+      }
+
+      return isValid;
+    } catch (error: any) {
+      console.error('Failed to verify biometric authentication:', error);
+      return false;
+    }
+  }
+
+  async disableBiometricAuth(walletAddress: string, biometricType: 'fingerprint' | 'face' | 'voice'): Promise<boolean> {
+    try {
+      const wallet = this.wallets.get(walletAddress);
+      if (!wallet || !wallet.biometricAuth) {
+        return false;
+      }
+
+      // Disable the specific biometric method
+      if (wallet.biometricAuth.methods[biometricType]) {
+        wallet.biometricAuth.methods[biometricType].enabled = false;
+        delete wallet.biometricAuth.methods[biometricType];
+      }
+
+      // Check if any methods are still enabled
+      const hasEnabledMethods = Object.values(wallet.biometricAuth.methods).some(method => method?.enabled);
+      if (!hasEnabledMethods) {
+        wallet.biometricAuth.enabled = false;
+      }
+
+      console.log(`Biometric authentication (${biometricType}) disabled for wallet ${walletAddress}`);
+      return true;
+    } catch (error: any) {
+      console.error('Failed to disable biometric authentication:', error);
+      return false;
+    }
+  }
+
+  async getBiometricAuthMethods(walletAddress: string): Promise<string[]> {
+    try {
+      const wallet = this.wallets.get(walletAddress);
+      if (!wallet || !wallet.biometricAuth?.enabled) {
+        return [];
+      }
+
+      return Object.entries(wallet.biometricAuth.methods)
+        .filter(([_, method]) => method?.enabled)
+        .map(([type, _]) => type);
+    } catch (error: any) {
+      console.error('Failed to get biometric authentication methods:', error);
+      return [];
+    }
+  }
+
+  // Private helper for biometric data hashing
+  private hashBiometricData(biometricData: string): string {
+    // In a real implementation, use proper cryptographic hashing with salt
+    // This is a simplified version for demonstration
+    const crypto = require('crypto');
+    return crypto.createHash('sha256').update(biometricData + 'energy_wallet_salt').digest('hex');
   }
 }

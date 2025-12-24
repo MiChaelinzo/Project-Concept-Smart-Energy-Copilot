@@ -21,7 +21,7 @@
   - **Property 3: Multi-network consistency**
   - _Requirements: 1.3, 1.4, 1.7_
 
-- [ ] 2. Implement Energy Wallet Management
+- [x] 2. Implement Energy Wallet Management
   - Create EnergyWalletImpl with secure key generation and storage
   - Implement multi-currency balance tracking (energy tokens, carbon credits, crypto)
   - Add staking functionality with reward calculations
@@ -29,13 +29,13 @@
   - Add biometric authentication integration
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7_
 
-- [ ] 2.1 Write unit tests for wallet operations
+- [x] 2.1 Write unit tests for wallet operations
   - Test secure wallet creation and key management
   - Test multi-currency balance updates
   - Test staking reward calculations
   - _Requirements: 2.1, 2.2, 2.3_
 
-- [ ] 2.2 Write property tests for wallet security
+- [x] 2.2 Write property tests for wallet security
   - **Property 4: Wallet balance consistency**
   - **Property 5: Transaction immutability**
   - **Property 6: Reputation score accuracy**
