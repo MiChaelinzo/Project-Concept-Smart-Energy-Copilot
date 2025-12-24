@@ -45,13 +45,13 @@ describe('EnergyTradingImpl Property Tests', () => {
   const contractGen = fc.record({
     seller: fc.hexaString({ minLength: 40, maxLength: 40 }).map(s => `0x${s}`),
     buyer: fc.constant(''),
-    energyAmount: fc.float({ min: Math.fround(0.1), max: Math.fround(10000) }),
-    pricePerKWh: fc.float({ min: Math.fround(0.01), max: Math.fround(1.0) }),
+    energyAmount: fc.float({ min: Math.fround(0.1), max: Math.fround(10000), noNaN: true }),
+    pricePerKWh: fc.float({ min: Math.fround(0.01), max: Math.fround(1.0), noNaN: true }),
     currency: currencyGen,
     contractType: contractTypeGen,
     deliveryStart: fc.date({ min: new Date('2024-01-01'), max: new Date('2024-12-31') }),
     blockchainNetwork: blockchainNetworkGen,
-    carbonCredits: fc.float({ min: Math.fround(0), max: Math.fround(100) }),
+    carbonCredits: fc.float({ min: Math.fround(0), max: Math.fround(100), noNaN: true }),
     renewablePercentage: fc.integer({ min: 0, max: 100 }),
     metadata: contractMetadataGen
   }).map(contract => ({
@@ -257,6 +257,34 @@ describe('EnergyTradingImpl Property Tests', () => {
   });
 
   describe('Additional Properties', () => {
+    test('NaN validation prevents invalid contracts', async () => {
+      await fc.assert(
+        fc.asyncProperty(
+          fc.record({
+            seller: fc.hexaString({ minLength: 40, maxLength: 40 }).map(s => `0x${s}`),
+            buyer: fc.constant(''),
+            energyAmount: fc.constantFrom(NaN, Infinity, -Infinity),
+            pricePerKWh: fc.float({ min: Math.fround(0.01), max: Math.fround(1.0), noNaN: true }),
+            currency: currencyGen,
+            contractType: contractTypeGen,
+            deliveryStart: fc.date({ min: new Date('2024-01-01'), max: new Date('2024-12-31') }),
+            blockchainNetwork: blockchainNetworkGen,
+            carbonCredits: fc.float({ min: Math.fround(0), max: Math.fround(100), noNaN: true }),
+            renewablePercentage: fc.integer({ min: 0, max: 100 }),
+            metadata: contractMetadataGen
+          }).map(contract => ({
+            ...contract,
+            totalPrice: contract.energyAmount * contract.pricePerKWh,
+            deliveryEnd: new Date(contract.deliveryStart.getTime() + 60 * 60 * 1000)
+          })) as fc.Arbitrary<Omit<EnergyContract, 'id' | 'status' | 'smartContractAddress'>>
+        , async (invalidContract) => {
+          // Contracts with NaN/Infinity values should be rejected
+          await expect(energyTrading.createContract(invalidContract)).rejects.toThrow();
+        }),
+        { numRuns: 10 }
+      );
+    });
+
     test('Wallet balance updates are consistent with transaction history', async () => {
       await fc.assert(
         fc.asyncProperty(
@@ -301,6 +329,9 @@ describe('EnergyTradingImpl Property Tests', () => {
           fc.array(contractGen, { minLength: 1, maxLength: 10 }),
           energySourceGen
         , async (contracts, filterSource) => {
+          // Clear any existing contracts for this test
+          (energyTrading as any).activeContracts.clear();
+          
           // Create all contracts
           const createdContracts = [];
           for (const contractData of contracts) {

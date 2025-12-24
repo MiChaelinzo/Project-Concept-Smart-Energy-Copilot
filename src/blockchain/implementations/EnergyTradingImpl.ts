@@ -715,12 +715,41 @@ export class EnergyTradingImpl implements EnergyTrading {
 
   // Private helper methods
   private validateContract(contract: EnergyContract): void {
+    // Check for NaN values
+    if (isNaN(contract.energyAmount) || !isFinite(contract.energyAmount)) {
+      throw new Error('Energy amount must be a valid number');
+    }
+    if (isNaN(contract.pricePerKWh) || !isFinite(contract.pricePerKWh)) {
+      throw new Error('Price per kWh must be a valid number');
+    }
+    if (isNaN(contract.totalPrice) || !isFinite(contract.totalPrice)) {
+      throw new Error('Total price must be a valid number');
+    }
+    if (isNaN(contract.carbonCredits) || !isFinite(contract.carbonCredits)) {
+      throw new Error('Carbon credits must be a valid number');
+    }
+    if (isNaN(contract.renewablePercentage) || !isFinite(contract.renewablePercentage)) {
+      throw new Error('Renewable percentage must be a valid number');
+    }
+    
+    // Check for positive values
     if (contract.energyAmount <= 0) {
       throw new Error('Energy amount must be positive');
     }
     if (contract.pricePerKWh <= 0) {
       throw new Error('Price per kWh must be positive');
     }
+    if (contract.totalPrice <= 0) {
+      throw new Error('Total price must be positive');
+    }
+    if (contract.carbonCredits < 0) {
+      throw new Error('Carbon credits cannot be negative');
+    }
+    if (contract.renewablePercentage < 0 || contract.renewablePercentage > 100) {
+      throw new Error('Renewable percentage must be between 0 and 100');
+    }
+    
+    // Check delivery time range
     if (contract.deliveryStart >= contract.deliveryEnd) {
       throw new Error('Invalid delivery time range');
     }
