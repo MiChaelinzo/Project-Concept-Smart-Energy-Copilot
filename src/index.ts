@@ -20,6 +20,10 @@ export * from './mobile/interfaces';
 export * from './mobile/implementations';
 export * from './mobile/types';
 
+// Export all blockchain interfaces and implementations
+export * from './blockchain/interfaces/EnergyTrading';
+export * from './blockchain/implementations';
+
 // Export all common utilities
 export * from './common';
 

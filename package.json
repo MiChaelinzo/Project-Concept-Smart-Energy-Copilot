@@ -51,7 +51,12 @@
     "jsonwebtoken": "^9.0.2",
     "qrcode": "^1.5.3",
     "sharp": "^0.33.0",
-    "ws": "^8.14.0"
+    "ws": "^8.14.0",
+    "web3": "^4.0.0",
+    "@solana/web3.js": "^1.87.0",
+    "@solana/spl-token": "^0.3.8",
+    "ethers": "^6.8.0",
+    "bignumber.js": "^9.1.2"
   },
   "devDependencies": {
     "@types/cors": "^2.8.0",
