@@ -41,7 +41,7 @@
   - **Property 6: Reputation score accuracy**
   - _Requirements: 2.4, 2.7_
 
-- [ ] 3. Implement Smart Contract Management
+- [x] 3. Implement Smart Contract Management
   - Create SmartContractManagerImpl for contract deployment and interaction
   - Add contract security auditing and vulnerability scanning
   - Implement gas optimization and cost estimation
@@ -49,7 +49,7 @@
   - Support proxy patterns for contract upgrades
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
 
-- [ ] 3.1 Write unit tests for smart contract operations
+- [x] 3.1 Write unit tests for smart contract operations
   - Test contract deployment with security verification
   - Test gas optimization algorithms
   - Test event listening and state updates
