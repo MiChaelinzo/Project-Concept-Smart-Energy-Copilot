@@ -57,7 +57,7 @@
 
 ## Phase 2: Carbon Credit Trading System
 
-- [ ] 4. Implement Carbon Credit Trading
+- [x] 4. Implement Carbon Credit Trading
   - Create CarbonCreditTradingImpl with blockchain certificate verification
   - Implement automatic carbon offset calculations
   - Add carbon credit purchasing and retirement logic
@@ -65,13 +65,13 @@
   - Create carbon portfolio management with vintage tracking
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7_
 
-- [ ] 4.1 Write unit tests for carbon credit operations
+- [x] 4.1 Write unit tests for carbon credit operations
   - Test carbon emission calculations
   - Test credit verification and authenticity
   - Test retirement process and blockchain recording
   - _Requirements: 4.1, 4.2, 4.3_
 
-- [ ] 4.2 Write property tests for carbon accounting
+- [x] 4.2 Write property tests for carbon accounting
   - **Property 7: Carbon calculation accuracy**
   - **Property 8: Credit retirement immutability**
   - **Property 9: Portfolio balance consistency**
