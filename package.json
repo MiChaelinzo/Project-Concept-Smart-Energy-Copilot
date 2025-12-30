@@ -1,6 +1,6 @@
 {
   "name": "smart-energy-copilot",
-  "version": "1.0.0",
+  "version": "3.1.0",
   "description": "AI-powered IoT system for optimizing energy consumption",
   "main": "dist/index.js",
   "scripts": {
@@ -44,7 +44,7 @@
     "node-hid": "^3.0.0",
     "serialport": "^12.0.0",
     "socket.io": "^4.8.1",
-    "tensorflow": "^4.15.0",
+    "@tensorflow/tfjs": "^4.22.0",
     "ml-regression": "^6.0.1",
     "node-cron": "^3.0.3",
     "bcrypt": "^5.1.1",

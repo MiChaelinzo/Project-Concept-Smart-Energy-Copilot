@@ -334,8 +334,9 @@ export class AdvancedConversationEngineImpl implements ConversationEngine {
   }
 
   private async updateEnvironmentContext(context: ConversationContext): Promise<void> {
-    // Update weather data
-    context.environmentContext.weather = await this.weatherService.getCurrentWeather();
+    // Update weather data with proper type conversion
+    const cloudWeather = await this.weatherService.getCurrentWeather();
+    context.environmentContext.weather = this.convertToWeatherData(cloudWeather);
     
     // Update time of day
     context.environmentContext.timeOfDay = this.getTimeOfDay();
@@ -359,14 +360,27 @@ export class AdvancedConversationEngineImpl implements ConversationEngine {
   }
 
   private async getEnvironmentContext(): Promise<any> {
+    const cloudWeather = await this.weatherService.getCurrentWeather();
     return {
-      weather: await this.weatherService.getCurrentWeather(),
+      weather: this.convertToWeatherData(cloudWeather),
       timeOfDay: this.getTimeOfDay(),
       season: this.getCurrentSeason(),
       energyPricing: await this.energyAnalytics.getCurrentEnergyPricing(),
       gridStatus: await this.energyAnalytics.getGridStatus()
     };
   }
+
+  private convertToWeatherData(cloudWeather: any): any {
+    return {
+      temperature: cloudWeather.temperature,
+      humidity: cloudWeather.humidity,
+      conditions: cloudWeather.conditions,
+      forecast: [], // Weather forecast would be fetched separately if needed
+      uvIndex: cloudWeather.uvIndex,
+      windSpeed: cloudWeather.windSpeed
+    };
+  }
+
 
   private getDefaultPreferences(): UserPreferences {
     return {

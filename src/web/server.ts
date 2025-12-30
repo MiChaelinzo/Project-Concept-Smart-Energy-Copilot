@@ -7,6 +7,9 @@ import { AIAgentTuyaIntegrationImpl } from '../desktop/implementations/AIAgentTu
 import { AIChatbotEngineImpl } from '../desktop/implementations/AIChatbotEngineImpl';
 import { TuyaCloudIntegrationImpl } from '../cloud/implementations/TuyaCloudIntegrationImpl';
 import { T5AICoreImpl } from '../edge/implementations/T5AICoreImpl';
+import { EnergyAnalyticsImpl } from '../cloud/implementations/EnergyAnalyticsImpl';
+import { EnergyReportGeneratorImpl } from '../cloud/implementations/EnergyReportGeneratorImpl';
+import { NotificationSystemImpl } from '../cloud/implementations/NotificationSystemImpl';
 
 /**
  * Smart Energy Copilot Web Dashboard Server
@@ -19,6 +22,9 @@ export class DashboardServer {
   private aiAgent?: AIAgentTuyaIntegrationImpl;
   private tuyaIntegration?: TuyaCloudIntegrationImpl;
   private t5AICore?: T5AICoreImpl;
+  private energyAnalytics?: EnergyAnalyticsImpl;
+  private reportGenerator?: EnergyReportGeneratorImpl;
+  private notificationSystem?: NotificationSystemImpl;
   private port: number;
 
   constructor(port: number = 3000) {
@@ -183,6 +189,165 @@ export class DashboardServer {
       ];
       res.json(logs);
     });
+
+    // Energy Analytics endpoints
+    this.app.get('/api/analytics/usage', async (req, res) => {
+      try {
+        if (!this.energyAnalytics) {
+          return res.status(503).json({ error: 'Energy analytics not available' });
+        }
+        const period = (req.query.period as string) || 'today';
+        const usage = await this.energyAnalytics.getTotalEnergyUsage(period);
+        res.json(usage);
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to get energy usage' });
+      }
+    });
+
+    this.app.get('/api/analytics/pricing', async (req, res) => {
+      try {
+        if (!this.energyAnalytics) {
+          return res.status(503).json({ error: 'Energy analytics not available' });
+        }
+        const pricing = await this.energyAnalytics.getCurrentEnergyPricing();
+        res.json(pricing);
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to get pricing' });
+      }
+    });
+
+    this.app.get('/api/analytics/grid-status', async (req, res) => {
+      try {
+        if (!this.energyAnalytics) {
+          return res.status(503).json({ error: 'Energy analytics not available' });
+        }
+        const gridStatus = await this.energyAnalytics.getGridStatus();
+        res.json(gridStatus);
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to get grid status' });
+      }
+    });
+
+    this.app.get('/api/analytics/trends', async (req, res) => {
+      try {
+        if (!this.energyAnalytics) {
+          return res.status(503).json({ error: 'Energy analytics not available' });
+        }
+        const deviceId = req.query.deviceId as string | undefined;
+        const trends = await this.energyAnalytics.getEnergyTrends(deviceId);
+        res.json(trends);
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to get energy trends' });
+      }
+    });
+
+    // Energy Report endpoints
+    this.app.get('/api/reports/:type', async (req, res) => {
+      try {
+        if (!this.reportGenerator) {
+          return res.status(503).json({ error: 'Report generator not available' });
+        }
+        const type = req.params.type as 'daily' | 'weekly' | 'monthly';
+        const userId = (req.query.userId as string) || 'default-user';
+        const report = await this.reportGenerator.generateReport(userId, type);
+        res.json(report);
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to generate report' });
+      }
+    });
+
+    this.app.get('/api/reports/:type/export', async (req, res) => {
+      try {
+        if (!this.reportGenerator) {
+          return res.status(503).json({ error: 'Report generator not available' });
+        }
+        const type = req.params.type as 'daily' | 'weekly' | 'monthly';
+        const format = (req.query.format as 'json' | 'csv') || 'json';
+        const userId = (req.query.userId as string) || 'default-user';
+        const report = await this.reportGenerator.generateReport(userId, type);
+        const exported = await this.reportGenerator.exportReport(report, format);
+        
+        if (format === 'csv') {
+          res.setHeader('Content-Type', 'text/csv');
+          res.setHeader('Content-Disposition', `attachment; filename=energy-report-${type}.csv`);
+        }
+        res.send(exported);
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to export report' });
+      }
+    });
+
+    // Notification endpoints
+    this.app.get('/api/notifications', async (req, res) => {
+      try {
+        if (!this.notificationSystem) {
+          return res.status(503).json({ error: 'Notification system not available' });
+        }
+        const userId = (req.query.userId as string) || 'default-user';
+        const unreadOnly = req.query.unread === 'true';
+        const limit = parseInt(req.query.limit as string) || 50;
+        
+        const notifications = await this.notificationSystem.getNotifications({
+          userId,
+          read: unreadOnly ? false : undefined,
+          dismissed: false,
+          limit
+        });
+        res.json(notifications);
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to get notifications' });
+      }
+    });
+
+    this.app.get('/api/notifications/stats', async (req, res) => {
+      try {
+        if (!this.notificationSystem) {
+          return res.status(503).json({ error: 'Notification system not available' });
+        }
+        const userId = (req.query.userId as string) || 'default-user';
+        const stats = await this.notificationSystem.getNotificationStats(userId);
+        res.json(stats);
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to get notification stats' });
+      }
+    });
+
+    this.app.post('/api/notifications/:id/read', async (req, res) => {
+      try {
+        if (!this.notificationSystem) {
+          return res.status(503).json({ error: 'Notification system not available' });
+        }
+        await this.notificationSystem.markAsRead(req.params.id);
+        res.json({ success: true });
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to mark notification as read' });
+      }
+    });
+
+    this.app.post('/api/notifications/:id/dismiss', async (req, res) => {
+      try {
+        if (!this.notificationSystem) {
+          return res.status(503).json({ error: 'Notification system not available' });
+        }
+        await this.notificationSystem.dismissNotification(req.params.id);
+        res.json({ success: true });
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to dismiss notification' });
+      }
+    });
+
+    this.app.post('/api/notifications/read-all', async (req, res) => {
+      try {
+        if (!this.notificationSystem) {
+          return res.status(503).json({ error: 'Notification system not available' });
+        }
+        const userId = (req.query.userId as string) || 'default-user';
+        await this.notificationSystem.markAllAsRead(userId);
+        res.json({ success: true });
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to mark all notifications as read' });
+      }
+    });
   }
 
   private setupSocketIO(): void {
@@ -266,14 +431,38 @@ export class DashboardServer {
         await this.t5AICore.initializeWithConfig(config.t5AICore);
       }
 
+      // Initialize Energy Analytics
+      this.energyAnalytics = new EnergyAnalyticsImpl();
+      
+      // Initialize Report Generator
+      this.reportGenerator = new EnergyReportGeneratorImpl(this.energyAnalytics);
+      
+      // Initialize Notification System
+      this.notificationSystem = new NotificationSystemImpl();
+      
+      // Set up notification subscriptions for real-time updates
+      this.setupNotificationBroadcasting();
+
       // Start real-time monitoring
       this.startRealTimeMonitoring();
 
       console.log('Dashboard server initialized successfully');
+      console.log('✅ Energy Analytics initialized');
+      console.log('✅ Report Generator initialized');
+      console.log('✅ Notification System initialized');
     } catch (error) {
       console.error('Failed to initialize dashboard server:', error);
       throw error;
     }
+  }
+
+  private setupNotificationBroadcasting(): void {
+    if (!this.notificationSystem) return;
+    
+    // Subscribe to notifications for real-time broadcasting
+    this.notificationSystem.subscribe('default-user', (notification) => {
+      this.io.emit('notification', notification);
+    });
   }
 
   private startRealTimeMonitoring(): void {

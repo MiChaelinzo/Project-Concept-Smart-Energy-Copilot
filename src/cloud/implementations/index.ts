@@ -3,3 +3,6 @@ export * from './DataStorageImpl';
 export * from './UserPreferencesImpl';
 export * from './AnalyticsEngineImpl';
 export * from './SmartGridIntegrationImpl';
+export * from './EnergyAnalyticsImpl';
+export * from './EnergyReportGeneratorImpl';
+export * from './NotificationSystemImpl';
