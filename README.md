@@ -1,6 +1,15 @@
-# Smart Energy Copilot v2.0 🌟
+# Smart Energy Copilot v3.1.0 🌟
 
 An advanced AI-powered IoT system that optimizes energy consumption through intelligent automation, predictive analytics, and smart grid integration. Transform your home or business into an energy-efficient, cost-saving, and environmentally friendly smart space.
+
+## 🆕 What's New in v3.1.0 (Weekly Update)
+
+- **📊 Energy Report Generator**: Automated daily, weekly, and monthly energy reports with insights and cost analysis
+- **🔔 Notification System**: Comprehensive alert system for energy spikes, device status, cost alerts, and achievements
+- **📈 Enhanced Energy Analytics**: Real-time energy trends, grid status monitoring, and time-of-use rate tracking
+- **🌐 New API Endpoints**: RESTful APIs for reports, notifications, analytics, and grid status
+- **🔧 Build Improvements**: Fixed TensorFlow dependency and TypeScript compilation issues
+- **🐛 Bug Fixes**: Resolved type compatibility issues in AI conversation engine
 
 ## 🚀 Latest Features (v3.0) - Revolutionary AI Upgrade!
 
