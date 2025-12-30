@@ -655,6 +655,6 @@ export class NotificationSystemImpl {
   }
 
   private generateId(): string {
-    return `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `notif_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
 }
